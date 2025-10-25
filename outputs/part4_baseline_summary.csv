@@ -1,0 +1,9 @@
+project_id,response,sex,sample_count,subject_count
+prj1,no,F,98,98
+prj1,no,M,91,91
+prj1,yes,F,84,84
+prj1,yes,M,111,111
+prj3,no,F,67,67
+prj3,no,M,69,69
+prj3,yes,F,63,63
+prj3,yes,M,73,73

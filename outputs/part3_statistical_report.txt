@@ -1,0 +1,41 @@
+================================================================================
+STATISTICAL ANALYSIS: RESPONDERS VS NON-RESPONDERS
+================================================================================
+
+Analysis: Melanoma patients treated with miraclib (PBMC samples only)
+Statistical Test: Mann-Whitney U Test (two-sided, α = 0.05)
+
+Rationale for Mann-Whitney U Test:
+  • Non-parametric test (no assumption of normal distribution)
+  • Robust to outliers in biological data
+  • Compares distributions between two independent groups
+  • Widely accepted in clinical and immunology research
+
+--------------------------------------------------------------------------------
+SUMMARY OF FINDINGS
+--------------------------------------------------------------------------------
+
+Found 1 cell population(s) with significant differences:
+
+• CD4 T CELL
+  - Responders: 30.54% ± 5.21%
+  - Non-responders: 29.9% ± 4.82%
+  - Difference: 0.64%
+  - p-value: 0.0134 *
+  - Effect size (Cohen's d): 0.127
+
+--------------------------------------------------------------------------------
+DETAILED RESULTS FOR ALL POPULATIONS
+--------------------------------------------------------------------------------
+
+Population      Resp Mean    Non-Resp Mean   Diff     p-value    Sig  
+--------------------------------------------------------------------------------
+Cd4 T Cell       30.54% ± 5.21   29.90% ± 4.82    0.64%  0.0134     *    
+B Cell            9.80% ± 3.32   10.00% ± 3.12   -0.20%  0.0557     ns   
+Nk Cell          14.84% ± 4.13   15.07% ± 3.77   -0.23%  0.1211     ns   
+Monocyte         19.94% ± 4.64   20.08% ± 4.01   -0.14%  0.1635     ns   
+Cd8 T Cell       24.88% ± 4.91   24.94% ± 4.42   -0.06%  0.6392     ns   
+
+Significance levels: *** p<0.001, ** p<0.01, * p<0.05, ns = not significant
+
+================================================================================

@@ -1,0 +1,72 @@
+{
+  "samples_by_project": {
+    "prj1": 384,
+    "prj3": 272
+  },
+  "subjects_by_response": {
+    "no": 325,
+    "yes": 331
+  },
+  "subjects_by_sex": {
+    "F": 312,
+    "M": 344
+  },
+  "detailed_breakdown": [
+    {
+      "project_id": "prj1",
+      "response": "no",
+      "sex": "F",
+      "sample_count": 98,
+      "subject_count": 98
+    },
+    {
+      "project_id": "prj1",
+      "response": "no",
+      "sex": "M",
+      "sample_count": 91,
+      "subject_count": 91
+    },
+    {
+      "project_id": "prj1",
+      "response": "yes",
+      "sex": "F",
+      "sample_count": 84,
+      "subject_count": 84
+    },
+    {
+      "project_id": "prj1",
+      "response": "yes",
+      "sex": "M",
+      "sample_count": 111,
+      "subject_count": 111
+    },
+    {
+      "project_id": "prj3",
+      "response": "no",
+      "sex": "F",
+      "sample_count": 67,
+      "subject_count": 67
+    },
+    {
+      "project_id": "prj3",
+      "response": "no",
+      "sex": "M",
+      "sample_count": 69,
+      "subject_count": 69
+    },
+    {
+      "project_id": "prj3",
+      "response": "yes",
+      "sex": "F",
+      "sample_count": 63,
+      "subject_count": 63
+    },
+    {
+      "project_id": "prj3",
+      "response": "yes",
+      "sex": "M",
+      "sample_count": 73,
+      "subject_count": 73
+    }
+  ]
+}
