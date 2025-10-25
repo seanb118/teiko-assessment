@@ -87,7 +87,7 @@ cell_counts
   └── count
 ```
 
-### Design Rationale
+### Database Design Philosophy/Thoughts
 
 #### 1. **Normalization Benefits**
 - **Eliminates Redundancy**: Subject demographics (age, sex, condition) stored once per subject, not repeated for every sample
@@ -123,173 +123,29 @@ idx_samples_type_time (sample_type, time_from_treatment_start)
 idx_cell_counts_population (population)
 ```
 
-### Scalability to Production
+**Scalability to Production**
+This schema is designed to scale to hundreds of projects, thousands of samples, and millions of records:
 
-This schema is designed to scale to **hundreds of projects, thousands of samples, and millions of records**:
+1. Horizontal Scaling
+Narrow table design enables efficient partitioning by:
+Project (for multi-tenant isolation)
+Time period (for temporal queries)
+Sample type (for different assay types)
 
-#### 1. **Horizontal Scaling**
-- Narrow table design enables efficient partitioning by:
-  - Project (for multi-tenant isolation)
-  - Time period (for temporal queries)
-  - Sample type (for different assay types)
+2. Query Performance
+Indexed foreign keys enable sub-second joins even with millions of rows
+Composite indexes optimize common analytical queries
+SQLite can handle 100+ million rows on modern hardware; though for productionized analysis something like Snowflake or Redshift can be considered
 
-#### 2. **Query Performance**
-- Indexed foreign keys enable sub-second joins even with millions of rows
-- Composite indexes optimize common analytical queries
-- SQLite can handle 100+ million rows on modern hardware
-
-#### 3. **Analytics Flexibility**
+3. Analytics Flexibility
 The schema supports diverse analytical needs:
-- **Longitudinal analysis**: Time-series queries via `time_from_treatment_start`
-- **Cohort analysis**: Easy filtering by demographics, treatment, response
-- **Population-specific analysis**: Efficient filtering by cell type
-- **Cross-project comparisons**: Project-level aggregations
-- **Machine learning pipelines**: Direct export to pandas/numpy
 
-#### 4. **Future Extensions**
-Easy to extend for:
-- Additional cell populations (just add rows to cell_counts)
-- New metadata fields (add columns to appropriate tables)
-- Multiple assay types (extend sample_type)
-- Additional measurements (new tables with foreign keys to samples)
+Longitudinal analysis: Time-series queries via time_from_treatment_start
+Cohort analysis: Easy filtering by demographics, treatment, response
+Population-specific analysis: Efficient filtering by cell type
+Cross-project comparisons: Project-level aggregations
 
-#### 5. **Production Considerations**
-For production deployment with massive scale:
-- **PostgreSQL/MySQL**: Replace SQLite for concurrent access
-- **Partitioning**: Partition cell_counts by project or date
-- **Materialized Views**: Pre-compute common aggregations
-- **Caching Layer**: Redis for frequently accessed statistics
-- **Time-series Database**: Consider TimescaleDB for temporal data
 
----
-
-## Code Architecture
-
-### Design Philosophy
-
-The codebase follows **object-oriented design principles** with clear separation of concerns:
-
-1. **Modularity**: Each module has a single, well-defined responsibility
-2. **Reusability**: Classes and functions are designed for reuse across different analyses
-3. **Testability**: Clear interfaces make unit testing straightforward
-4. **Maintainability**: Comprehensive docstrings and type hints
-5. **Scalability**: Efficient algorithms and data structures
-
-### Module Responsibilities
-
-#### `database.py` - Data Layer
-**Purpose**: Encapsulates all database operations
-
-**Key Features**:
-- `ClinicalTrialDB` class manages database lifecycle
-- Context manager support (`with` statements)
-- Parameterized queries prevent SQL injection
-- Efficient batch loading
-- Type-safe query methods
-
-**Why this design**:
-- Separates data access from business logic
-- Easy to swap SQLite for PostgreSQL
-- Enables database mocking for tests
-- Single source of truth for queries
-
-#### `analysis.py` - Statistical Layer
-**Purpose**: Performs hypothesis testing and statistical computations
-
-**Key Features**:
-- `ImmunePopulationAnalyzer` class for statistical tests
-- Mann-Whitney U test (non-parametric)
-- Effect size calculations (Cohen's d)
-- Comprehensive reporting
-
-**Why this design**:
-- Domain-specific logic isolated from I/O
-- Stateless design enables parallel processing
-- Easy to add new statistical tests
-- Scientific rigor with proper methodology
-
-**Statistical Method Choice**:
-- **Mann-Whitney U Test**: Selected because:
-  - No assumption of normal distribution (biological data often skewed)
-  - Robust to outliers
-  - Widely accepted in clinical/immunology research
-  - Appropriate for independent samples comparison
-
-#### `visualization.py` - Presentation Layer
-**Purpose**: Creates publication-quality visualizations
-
-**Key Features**:
-- `ImmunePopulationVisualizer` class for consistent styling
-- Multiple chart types (boxplots, bar charts, p-value plots)
-- Interactive Plotly figures
-- Significance annotations
-
-**Why this design**:
-- Consistent visual style across all plots
-- Easy to export to different formats (HTML, PNG, PDF)
-- Separates visualization logic from data processing
-- Reusable plotting functions
-
-#### `main.py` - Orchestration Layer
-**Purpose**: Coordinates the complete analysis workflow
-
-**Key Features**:
-- Sequential execution of all analysis parts
-- Progress reporting
-- Error handling
-- Output management
-
-**Why this design**:
-- Clear workflow visibility
-- Easy to run complete analysis
-- Reproducible results
-- Single entry point for automation
-
-#### `dashboard.py` - Interaction Layer
-**Purpose**: Provides interactive web interface
-
-**Key Features**:
-- Dash-based web application
-- Multiple tabs for different analyses
-- Interactive tables and charts
-- Real-time data exploration
-
-**Why this design**:
-- User-friendly interface for non-technical stakeholders
-- No installation required (web browser)
-- Interactive exploration enables deeper insights
-- Professional appearance suitable for client presentation
-
-### Key Design Decisions
-
-#### 1. **Object-Oriented vs Functional**
-- Used **OOP for state management** (database connections, configurations)
-- Used **functional programming for stateless operations** (statistical calculations)
-- Best of both paradigms
-
-#### 2. **Type Hints**
-```python
-def get_sample_summary(self) -> pd.DataFrame:
-```
-- Improves IDE autocomplete
-- Catches type errors early
-- Self-documenting code
-
-#### 3. **Pandas Integration**
-- SQLite → Pandas for analysis
-- Leverages Pandas' powerful data manipulation
-- Seamless integration with scientific Python ecosystem
-
-#### 4. **Error Handling**
-```python
-if db_file.exists():
-    db_file.unlink()
-```
-- Defensive programming practices
-- Graceful degradation
-- Clear error messages
-
----
 
 ## Analysis Outputs
 
@@ -389,32 +245,6 @@ python dashboard.py
 http://localhost:8050
 ```
 
----
-
-## 🧪 Quality Assurance
-
-### Code Quality
-- **Type hints**: All functions have type annotations
-- **Docstrings**: Comprehensive documentation for all modules
-- **Comments**: Inline comments for complex logic
-- **Naming**: Descriptive variable and function names
-- **PEP 8**: Follows Python style guidelines
-
-### Data Quality
-- **Foreign key constraints**: Ensure referential integrity
-- **Unique constraints**: Prevent duplicate records
-- **Check constraints**: Validate categorical values
-- **Indexes**: Optimize query performance
-
-### Statistical Rigor
-- **Appropriate test selection**: Non-parametric test for non-normal data
-- **Effect size reporting**: Beyond just p-values
-- **Two-sided testing**: Conservative approach
-- **Multiple comparison awareness**: Documented in report
-
----
-
-
 ## Future Enhancements
 
 ### Technical Improvements
@@ -429,16 +259,15 @@ http://localhost:8050
 2. **Longitudinal Analysis**: Time-series analysis of immune dynamics
 3. **Batch Effects**: Account for project-level variation
 4. **Sample Size Calculations**: Power analysis for study design
-5. **Multivariate Analysis**: PCA, clustering, dimension reduction
 
 ### Dashboard Enhancements
 1. **User Authentication**: Secure access control
 2. **Export Functionality**: Direct export of filtered data
 3. **Real-time Updates**: WebSocket for live data
 4. **Custom Reports**: User-defined analysis parameters
-5. **Collaboration**: Shared annotations and notes
+5. **UI Filter Functions**: Create custom filters for scientists/stakeholders
 
-## 📧 Contact
+## Contact
 
 For questions about this assessment or technical implementation details, please contact the author Xiang at seanbai@berkeley.edu
 
